@@ -8,9 +8,11 @@ package vector
 //		通过interface实现泛型
 //		可接纳不同类型的元素
 //		但建议在同一个vector中使用相同类型的元素
-//		可通过配合比较器competitor和迭代器iterator对该vector容器进行排序或查找
+//		可通过配合比较器competitor和迭代器iterator对该vector容器进行排序查找或遍历
 
 import (
+	"github.com/hlccd/goSTL/utils/comparator"
+	"github.com/hlccd/goSTL/utils/iterator"
 	"sync"
 )
 
@@ -32,17 +34,19 @@ type vector struct {
 //对应函数介绍见下方
 
 type vectorer interface {
-	Size() (num int)               //返回vector的长度
-	Clear()                        //清空vector
-	Empty() (b bool)               //返回vector是否为空,为空则返回true反之返回false
-	PushBack(e interface{})        //向vector末尾插入一个元素
-	PopBack()                      //弹出vector末尾元素
-	Insert(idx int, e interface{}) //向vector第idx的位置插入元素e,同时idx后的其他元素向后退一位
-	Erase(idx int)                 //删除vector的第idx个元素
-	Reverse()                      //逆转vector中的数据顺序
-	At(idx int) (e interface{})    //返回vector的第idx的元素
-	Front() (e interface{})        //返回vector的第一个元素
-	Back() (e interface{})         //返回vector的最后一个元素
+	Iterator() *Iterator.Iterator      //返回一个包含vector所有元素的迭代器
+	Sort(Cmp ...comparator.Comparator) //利用比较器对其进行排序
+	Size() (num int)                   //返回vector的长度
+	Clear()                            //清空vector
+	Empty() (b bool)                   //返回vector是否为空,为空则返回true反之返回false
+	PushBack(e interface{})            //向vector末尾插入一个元素
+	PopBack()                          //弹出vector末尾元素
+	Insert(idx int, e interface{})     //向vector第idx的位置插入元素e,同时idx后的其他元素向后退一位
+	Erase(idx int)                     //删除vector的第idx个元素
+	Reverse()                          //逆转vector中的数据顺序
+	At(idx int) (e interface{})        //返回vector的第idx的元素
+	Front() (e interface{})            //返回vector的第一个元素
+	Back() (e interface{})             //返回vector的最后一个元素
 }
 
 //@title    New
@@ -55,12 +59,61 @@ type vectorer interface {
 //@return    	v        	*vector					新建的vector指针
 func New() (v *vector) {
 	return &vector{
-		data:  make([]interface{}, 1),
+		data:  make([]interface{}, 1, 1),
 		end:   0,
 		mutex: sync.Mutex{},
 	}
 }
 
+//@title    Iterator
+//@description
+//		以vector向量容器做接收者
+//		将vector向量容器中不使用空间释放掉
+//		返回一个包含容器中所有使用元素的迭代器
+//@receiver		v			*vector					接受者vector的指针
+//@param    	nil
+//@return    	i        	*iterator.Iterator		新建的Iterator迭代器指针
+func (v *vector) Iterator() (i *Iterator.Iterator) {
+	if v == nil {
+		v.data = make([]interface{}, 1, 1)
+		v.end = 0
+	}
+	v.mutex.Lock()
+	if v.end > 0 {
+		v.data = v.data[:v.end]
+	} else {
+		v.data = make([]interface{}, 1, 1)
+	}
+	i = Iterator.New(&v.data)
+	v.mutex.Unlock()
+	return i
+}
+
+//@title    Sort
+//@description
+//		以vector向量容器做接收者
+//		将vector向量容器中不使用空间释放掉
+//		对元素中剩余的部分进行排序
+//@receiver		v			*vector						接受者vector的指针
+//@param    	Cmp			...comparator.Comparator	比较函数
+//@return    	i        	*iterator.Iterator			新建的Iterator迭代器指针
+func (v *vector) Sort(Cmp ...comparator.Comparator) {
+	if v == nil {
+		v.data = make([]interface{}, 1, 1)
+	}
+	v.mutex.Lock()
+	if v.end > 0 {
+		v.data = v.data[:v.end]
+	} else {
+		v.data = make([]interface{}, 0, 0)
+	}
+	if len(Cmp) == 0 {
+		comparator.Sort(&v.data)
+	} else {
+		comparator.Sort(&v.data, Cmp[0])
+	}
+	v.mutex.Unlock()
+}
 
 //@title    Size
 //@description
