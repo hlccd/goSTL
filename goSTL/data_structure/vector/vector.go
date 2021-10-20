@@ -3,7 +3,7 @@ package vector
 //@Title		vector
 //@Description
 //		vector向量容器包
-//		以切片数组的形式实现
+//		以动态数组的形式实现
 //		该容器可以在尾部实现线性增减元素
 //		通过interface实现泛型
 //		可接纳不同类型的元素
@@ -24,8 +24,9 @@ import (
 //当添加节点时尾指针大于已分配空间长度,则新增空间
 
 type vector struct {
-	data  []interface{} //泛型切片
-	end   int           //尾指针
+	data  []interface{} //动态数组
+	len   uint64        //当前已用数量
+	cap   uint64        //可容纳元素数量
 	mutex sync.Mutex    //并发控制锁
 }
 
