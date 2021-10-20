@@ -246,7 +246,7 @@ func (v *vector) PopBack() {
 	}
 	v.mutex.Lock()
 	v.len--
-	if v.cap-v.len >= 2^16 {
+	if v.cap-v.len >= 65536 {
 		//容量和实际使用差值超过2^16时,容量直接减去2^16
 		v.cap -= 2 ^ 16
 		tmp := make([]interface{}, v.cap, v.cap)
@@ -283,7 +283,7 @@ func (v *vector) Insert(idx uint64, e interface{}) {
 	var tmp []interface{}
 	if v.len >= v.cap {
 		//冗余不足,进行扩容
-		if v.cap <= 2^16 {
+		if v.cap <= 65536 {
 			//容量翻倍
 			if v.cap == 0 {
 				v.cap = 1
@@ -332,7 +332,7 @@ func (v *vector) Erase(idx uint64) {
 		v.data[p] = v.data[p+1]
 	}
 	v.len--
-	if v.cap-v.len >= 2^16 {
+	if v.cap-v.len >= 65536 {
 		//容量和实际使用差值超过2^16时,容量直接减去2^16
 		v.cap -= 2 ^ 16
 		tmp := make([]interface{}, v.cap, v.cap)
