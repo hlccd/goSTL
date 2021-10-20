@@ -206,7 +206,7 @@ func (v *vector) PushBack(e interface{}) {
 		v.data[v.len] = e
 	} else {
 		//冗余不足,需要扩容
-		if v.cap < 2^16 {
+		if v.cap <= 2^16 {
 			//容量翻倍
 			if v.cap == 0 {
 				v.cap = 1
@@ -280,9 +280,10 @@ func (v *vector) Insert(idx uint64, e interface{}) {
 		v = New()
 	}
 	v.mutex.Lock()
+	var tmp []interface{}
 	if v.len >= v.cap {
 		//冗余不足,进行扩容
-		if v.cap < 2^16 {
+		if v.cap <= 2^16 {
 			//容量翻倍
 			if v.cap == 0 {
 				v.cap = 1
@@ -293,7 +294,7 @@ func (v *vector) Insert(idx uint64, e interface{}) {
 			v.cap += 2 ^ 16
 		}
 		//复制扩容前的元素
-		tmp := make([]interface{}, v.cap, v.cap)
+		tmp = make([]interface{}, v.cap, v.cap)
 		copy(tmp, v.data)
 		v.data = tmp
 	}
@@ -370,6 +371,7 @@ func (v *vector) Reverse() {
 		tmp := make([]interface{}, v.len, v.len)
 		copy(tmp, v.data)
 		v.data = tmp
+		v.cap=v.len
 	}
 	for i := uint64(0); i < v.len/2; i++ {
 		v.data[i], v.data[v.len-i-1] = v.data[v.len-i-1], v.data[i]
