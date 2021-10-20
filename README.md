@@ -15,3 +15,8 @@
 #### vector
 
 参考：https://zhuanlan.zhihu.com/p/423688716
+
+
+#### queue
+
+参考：https://zhuanlan.zhihu.com/p/423805926
