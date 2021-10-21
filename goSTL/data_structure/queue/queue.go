@@ -11,6 +11,7 @@ package queue
 //		通过并发控制锁保证了在高并发过程中的数据一致性
 
 import (
+	"github.com/hlccd/goSTL/utils/iterator"
 	"sync"
 )
 
@@ -34,13 +35,14 @@ type queue struct {
 //对应函数介绍见下方
 
 type queuer interface {
-	Size() (num uint64)     //返回该队列中元素的使用空间大小
-	Clear()                 //清空该队列
-	Empty() (b bool)        //判断该队列是否为空
-	Push(e interface{})     //将元素e添加到该队列末尾
-	Pop() (e interface{})   //将该队列首元素弹出并返回
-	Front() (e interface{}) //获取该队列首元素
-	Back() (e interface{})  //获取该队列尾元素
+	Iterator() (i *Iterator.Iterator) //返回包含队列中所有元素的迭代器
+	Size() (size uint64)              //返回该队列中元素的使用空间大小
+	Clear()                           //清空该队列
+	Empty() (b bool)                  //判断该队列是否为空
+	Push(e interface{})               //将元素e添加到该队列末尾
+	Pop() (e interface{})             //将该队列首元素弹出并返回
+	Front() (e interface{})           //获取该队列首元素
+	Back() (e interface{})            //获取该队列尾元素
 }
 
 //@title    New
@@ -61,6 +63,25 @@ func New() (q *queue) {
 	}
 }
 
+//@title    Iterator
+//@description
+//		以queue队列容器做接收者
+//		将queue队列容器中不使用空间释放掉
+//@return    	q        	*queue					接收者的queue指针
+//@param    	nil
+//@return    	i        	*iterator.Iterator		新建的Iterator迭代器指针
+func (q *queue) Iterator() (i *Iterator.Iterator) {
+	if q == nil {
+		q = New()
+	}
+	q.mutex.Lock()
+	tmp := make([]interface{}, q.end-q.begin, q.end-q.begin)
+	copy(tmp, q.data[q.begin:q.end])
+	i = Iterator.New(&tmp)
+	q.mutex.Unlock()
+	return i
+}
+
 //@title    Size
 //@description
 //		以queue队列容器做接收者
@@ -69,8 +90,8 @@ func New() (q *queue) {
 //		若容器为空则返回0
 //@receiver		q			*queue					接受者queue的指针
 //@param    	nil
-//@return    	num        	int						容器中实际使用元素所占空间大小
-func (q *queue) Size() (num uint64) {
+//@return    	size        	uint64						容器中实际使用元素所占空间大小
+func (q *queue) Size() (size uint64) {
 	if q == nil {
 		q = New()
 	}
@@ -192,14 +213,14 @@ func (q *queue) Pop() (e interface{}) {
 	q.mutex.Lock()
 	e = q.data[q.begin]
 	q.begin++
-	if q.begin >= 1024 || q.begin*2>q.end {
+	if q.begin >= 1024 || q.begin*2 > q.end {
 		//首部冗余超过2^10或首部冗余超过实际使用
 		q.cap -= q.begin
 		q.end -= q.begin
 		tmp := make([]interface{}, q.cap, q.cap)
 		copy(tmp, q.data[q.begin:])
 		q.data = tmp
-		q.begin=0
+		q.begin = 0
 	}
 	q.mutex.Unlock()
 	return e
@@ -215,7 +236,7 @@ func (q *queue) Pop() (e interface{}) {
 //@return    	e			interface{}				容器的第一个元素
 func (q *queue) Front() (e interface{}) {
 	if q == nil {
-		q=New()
+		q = New()
 		return nil
 	}
 	if q.Empty() {
@@ -235,7 +256,7 @@ func (q *queue) Front() (e interface{}) {
 //@return    	e			interface{}				容器的最后一个元素
 func (q *queue) Back() (e interface{}) {
 	if q == nil {
-		q=New()
+		q = New()
 		return nil
 	}
 	if q.Empty() {
