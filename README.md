@@ -18,3 +18,6 @@
 
 #### deque
 参考：https://zhuanlan.zhihu.com/p/424225817
+
+#### list
+参考：https://zhuanlan.zhihu.com/p/424603940
