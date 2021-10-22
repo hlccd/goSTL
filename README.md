@@ -16,5 +16,5 @@
 #### queue
 参考：https://zhuanlan.zhihu.com/p/423805926
 
-#### queue
+#### deque
 参考：https://zhuanlan.zhihu.com/p/424225817
