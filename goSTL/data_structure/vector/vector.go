@@ -106,7 +106,7 @@ func (v *vector) Iterator() (i *Iterator.Iterator) {
 //		对元素中剩余的部分进行排序
 //@receiver		v			*vector						接受者vector的指针
 //@param    	Cmp			...comparator.Comparator	比较函数
-//@return    	i        	*iterator.Iterator			新建的Iterator迭代器指针
+//@return    	nil
 func (v *vector) Sort(Cmp ...comparator.Comparator) {
 	if v == nil {
 		v = New()

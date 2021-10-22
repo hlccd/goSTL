@@ -16,6 +16,10 @@ package comparator
 
 type Comparator func(a, b interface{}) int
 
+//比较器的特种——相等器
+//判断传入的两个元素是否相等
+type Equaler func(a, b interface{}) (B bool)
+
 //@title    GetCmp
 //@description
 //		传入一个数据并根据该数据类型返回一个对应的比较器
@@ -25,7 +29,7 @@ type Comparator func(a, b interface{}) int
 //@param    	e			interface{}
 //@return    	cmp        	Comparator		该类型对应的默认比较器
 func GetCmp(e interface{}) (cmp Comparator) {
-	if e==nil{
+	if e == nil {
 		return nil
 	}
 	switch e.(type) {
@@ -61,6 +65,30 @@ func GetCmp(e interface{}) (cmp Comparator) {
 		return stringCmp
 	}
 	return nil
+}
+
+//@title    GetEqual
+//@description
+//		传入一个数据并根据该数据类型返回一个对应的比较器
+//		若该类型并非系统自带类型,则返回个空比较器
+//		若传入元素为nil则之间返回nil
+//@receiver		nil
+//@param    	e			interface{}
+//@return    	cmp        	Comparator		该类型对应的默认比较器
+func GetEqual() (equ Equaler) {
+	return basicEqual
+}
+
+//@title    basicEqual
+//@description
+//		返回基本比较器
+//		即有且仅有判断量元素是否完全相等
+//@receiver		a			interface{}		待判断相等的第一个元素
+//@receiver		b			interface{}		待判断相等的第二个元素
+//@param    	nil
+//@return    	B			bool			这两个元素是否相等？
+func basicEqual(a, b interface{}) (B bool) {
+	return a == b
 }
 
 //以下为系统自带类型的默认比较器

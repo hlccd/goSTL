@@ -23,7 +23,7 @@ type node struct {
 }
 
 //deque双向队列容器接口
-//存放了deque容器可使用的函数
+//存放了node结点容器可使用的函数
 //对应函数介绍见下方
 type noder interface {
 	nextNode() (m *node)                   //返回下一个结点
