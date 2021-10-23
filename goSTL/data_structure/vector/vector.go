@@ -17,7 +17,7 @@ import (
 )
 
 //vector向量结构体
-//包含泛型切片和该切片的尾指针
+//包含动态数组和该数组的尾下标
 //当删除节点时仅仅需要长度-1即可
 //当剩余长度较小时会采取缩容策略释放空间
 //当添加节点时若未占满全部已分配空间则长度+1同时进行覆盖存放
@@ -206,7 +206,7 @@ func (v *vector) PushBack(e interface{}) {
 		v.data[v.len] = e
 	} else {
 		//冗余不足,需要扩容
-		if v.cap <= 2^16 {
+		if v.cap <= 65536 {
 			//容量翻倍
 			if v.cap == 0 {
 				v.cap = 1
@@ -214,7 +214,7 @@ func (v *vector) PushBack(e interface{}) {
 			v.cap *= 2
 		} else {
 			//容量增加2^16
-			v.cap += 2 ^ 16
+			v.cap += 65536
 		}
 		//复制扩容前的元素
 		tmp := make([]interface{}, v.cap, v.cap)
@@ -248,7 +248,7 @@ func (v *vector) PopBack() {
 	v.len--
 	if v.cap-v.len >= 65536 {
 		//容量和实际使用差值超过2^16时,容量直接减去2^16
-		v.cap -= 2 ^ 16
+		v.cap -= 65536
 		tmp := make([]interface{}, v.cap, v.cap)
 		copy(tmp, v.data)
 		v.data = tmp
@@ -291,7 +291,7 @@ func (v *vector) Insert(idx uint64, e interface{}) {
 			v.cap *= 2
 		} else {
 			//容量增加2^16
-			v.cap += 2 ^ 16
+			v.cap += 65536
 		}
 		//复制扩容前的元素
 		tmp = make([]interface{}, v.cap, v.cap)
@@ -334,7 +334,7 @@ func (v *vector) Erase(idx uint64) {
 	v.len--
 	if v.cap-v.len >= 65536 {
 		//容量和实际使用差值超过2^16时,容量直接减去2^16
-		v.cap -= 2 ^ 16
+		v.cap -= 65536
 		tmp := make([]interface{}, v.cap, v.cap)
 		copy(tmp, v.data)
 		v.data = tmp
