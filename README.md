@@ -19,3 +19,6 @@
 
 #### list
 参考：https://zhuanlan.zhihu.com/p/424603940
+
+#### ring
+参考：https://zhuanlan.zhihu.com/p/424860909
