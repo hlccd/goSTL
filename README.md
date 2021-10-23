@@ -22,3 +22,6 @@
 
 #### ring
 参考：https://zhuanlan.zhihu.com/p/424860909
+
+#### stack
+参考：https://zhuanlan.zhihu.com/p/424967178
