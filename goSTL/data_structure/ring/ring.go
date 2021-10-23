@@ -191,7 +191,7 @@ func (r *ring) Erase() {
 	r.mutex.Unlock()
 }
 
-//@title    Get
+//@title    Value
 //@description
 //		以ring环容器做接收者
 //		获取环中当前持有节点所承载的元素
