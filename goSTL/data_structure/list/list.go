@@ -1,6 +1,6 @@
 package list
 
-//@Title		deque
+//@Title		list
 //@Description
 //		list链表容器包
 //		链表将所有结点通过指针的方式串联起来,从而使得其整体保持一个线性状态
@@ -313,6 +313,7 @@ func (l *list) Get(idx uint64) (e interface{}) {
 //@receiver    	l        	*list						接收者的list指针
 //@param    	idx			uint64						被修改的结点位置(从0开始)
 //@param    	e			interface{}					修改后当元素
+//@return		nil
 func (l *list) Set(idx uint64, e interface{}) {
 	if l == nil {
 		l = New()

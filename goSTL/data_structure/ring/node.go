@@ -1,17 +1,15 @@
-package list
+package ring
 
-//@Title		list
+//@Title		ring
 //@Description
-//		list链表容器包
-//		该部分包含了链表的节点
-//		链表的增删都通过节点的增删完成
+//		ring环容器包
+//		该部分包含了环的节点
+//		环的增删都通过节点的增删完成
 //		结点间可插入其前后节点,并同时将两结点建立连接
-//		增删之后会返回对应的首尾节点以辅助list容器仍持有首尾节点
-//		为保证效率问题,设定了一定的冗余量,即每个节点设定2^10的空间以存放元素
 
-//链表的node节点结构体
+//环的node节点结构体
 //pre和next是该节点的前后两个节点的指针
-//用以保证链表整体是相连的
+//用以保证环整体是相连的
 type node struct {
 	data interface{} //结点所承载的元素
 	pre  *node       //前结点指针
@@ -34,17 +32,20 @@ type noder interface {
 
 //@title    newNode
 //@description
-//		新建一个结点并返回其指针
-//		初始首结点的前后结点指针都为nil
+//		新建一个自环结点并返回其指针
+//		初始首结点的前后结点指针都为自身
 //@receiver		nil
 //@param    	nil
 //@return    	n        	*node					新建的node指针
 func newNode(e interface{}) (n *node) {
-	return &node{
+	n = &node{
 		data: e,
 		pre:  nil,
 		next: nil,
 	}
+	n.pre = n
+	n.next = n
+	return n
 }
 
 //@title    preNode
