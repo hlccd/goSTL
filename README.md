@@ -25,3 +25,6 @@
 
 #### stack
 参考：https://zhuanlan.zhihu.com/p/424967178
+
+#### priority_queue
+参考：https://zhuanlan.zhihu.com/p/425095786
