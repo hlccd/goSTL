@@ -1,30 +1,33 @@
 # goSTL
-#### comparator
+#### 比较器:comparator
 参考：https://zhuanlan.zhihu.com/p/422888284
 
-#### iterator
+#### 迭代器:iterator
 参考：https://zhuanlan.zhihu.com/p/422978077
 
-#### bitmap
+#### 位图:bitmap
 参考：https://zhuanlan.zhihu.com/p/423253110
 
-#### vector
+#### 向量:vector
 参考：https://zhuanlan.zhihu.com/p/423688716
 
-#### queue
+#### 队列:queue
 参考：https://zhuanlan.zhihu.com/p/423805926
 
-#### deque
+#### 双向队列:deque
 参考：https://zhuanlan.zhihu.com/p/424225817
 
-#### list
+#### 链表:list
 参考：https://zhuanlan.zhihu.com/p/424603940
 
-#### ring
+#### 环:ring
 参考：https://zhuanlan.zhihu.com/p/424860909
 
-#### stack
+#### 栈:stack
 参考：https://zhuanlan.zhihu.com/p/424967178
 
-#### priority_queue
+#### 优先队列:priority_queue
 参考：https://zhuanlan.zhihu.com/p/425095786
+
+#### 二叉搜索树:Binary Search Tree
+参考：https://zhuanlan.zhihu.com/p/425215493
