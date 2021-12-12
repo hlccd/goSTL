@@ -12,7 +12,7 @@ package bitmap
 //包含其用于存储的uint64元素切片
 //选用uint64是为了更多的利用bit位
 
-type bitmap struct {
+type Bitmap struct {
 	bits []uint64
 }
 
@@ -34,9 +34,9 @@ type bitmaper interface {
 //		初始bitmap的切片数组为空
 //@receiver		nil
 //@param    	nil
-//@return    	bm        	*bitmap					新建的bitmap指针
-func New() (bm *bitmap) {
-	return &bitmap{
+//@return    	bm        	*Bitmap					新建的bitmap指针
+func New() (bm *Bitmap) {
+	return &Bitmap{
 		bits: make([]uint64, 0, 0),
 	}
 }
@@ -48,10 +48,10 @@ func New() (bm *bitmap) {
 //		当num大于当前所能存储的位范围时,需要进行扩增
 //		若要插入的位比冗余的多不足2^16即1024*64时,则新增1024个uint64
 //		否则则直接增加到可以容纳第num位的位置,以此可以提高冗余量,避免多次增加
-//@receiver		bm			*bitmap					接受者bitmap的指针
+//@receiver		bm			*Bitmap					接受者bitmap的指针
 //@param    	num			int						待插入的位的下标
 //@return    	nil
-func (bm *bitmap) Insert(num uint) {
+func (bm *Bitmap) Insert(num uint) {
 	//bm不存在时直接结束
 	if bm == nil {
 		return
@@ -86,10 +86,10 @@ func (bm *bitmap) Insert(num uint) {
 //		对于缩容而言,从后往前遍历判断最后有多少个连续的0,即可以删除的多少组
 //		若可删除的组大于总组数的一半则进行删除,否则则当作冗余量即可
 //		若可删除的组数超过1024个时,则先删除1024个
-//@receiver		bm			*bitmap					接受者bitmap的指针
+//@receiver		bm			*Bitmap					接受者bitmap的指针
 //@param    	num			int						待删除的位的下标
 //@return    	nil
-func (bm *bitmap) Delete(num uint) {
+func (bm *Bitmap) Delete(num uint) {
 	//bm不存在时直接结束
 	if bm == nil {
 		return
@@ -127,10 +127,10 @@ func (bm *bitmap) Delete(num uint) {
 //		检验第num位在位图中是否存在
 //		当num大于当前所能存储的位范围时,直接返回false
 //		否则判断第num为是否为1,为1返回true,否则返回false
-//@receiver		bm			*bitmap					接受者bitmap的指针
+//@receiver		bm			*Bitmap					接受者bitmap的指针
 //@param    	num			int						待检测位的下标
 //@return    	b			bool					第num位存在于位图中
-func (bm *bitmap) Check(num uint) (b bool) {
+func (bm *Bitmap) Check(num uint) (b bool) {
 	//bm不存在时直接返回false并结束
 	if bm == nil {
 		return false
@@ -151,10 +151,10 @@ func (bm *bitmap) Check(num uint) (b bool) {
 //		以bitmap位图容器做接收者
 //		返回所有在位图中存在的元素的下标
 //		返回的下标是单调递增序列
-//@receiver		bm			*bitmap					接受者bitmap的指针
+//@receiver		bm			*Bitmap					接受者bitmap的指针
 //@param    	nil
 //@return    	nums		[]uint					所有在位图中存在的元素的下标集合
-func (bm *bitmap) All() (nums []uint) {
+func (bm *Bitmap) All() (nums []uint) {
 	//对要返回的集合进行初始化,以避免返回nil
 	nums=make([]uint,0,0)
 	//bm不存在时直接返回并结束
@@ -177,10 +177,10 @@ func (bm *bitmap) All() (nums []uint) {
 //@description
 //		以bitmap位图容器做接收者
 //		清空位图
-//@receiver		bm			*bitmap					接受者bitmap的指针
+//@receiver		bm			*Bitmap					接受者bitmap的指针
 //@param    	nil
 //@return    	nums		[]uint					所有在位图中存在的元素的下标集合
-func (bm *bitmap) Clear() {
+func (bm *Bitmap) Clear() {
 	if bm == nil {
 		return
 	}

@@ -22,7 +22,7 @@ import (
 //当添加节点时若未占满全部已分配空间则尾指针后移一位同时进行覆盖存放
 //当添加节点时尾指针大于已分配空间长度,则先去掉首部多出来的空间,如果还不足则进行扩容
 //首节点指针始终不能超过尾节点指针
-type queue struct {
+type Queue struct {
 	data  []interface{} //泛型切片
 	begin uint64        //首节点下标
 	end   uint64        //尾节点下标
@@ -52,9 +52,9 @@ type queuer interface {
 //		初始queue的首尾指针均置零
 //@receiver		nil
 //@param    	nil
-//@return    	q        	*queue					新建的queue指针
-func New() (q *queue) {
-	return &queue{
+//@return    	q        	*Queue					新建的queue指针
+func New() (q *Queue) {
+	return &Queue{
 		data:  make([]interface{}, 1, 1),
 		begin: 0,
 		end:   0,
@@ -67,10 +67,10 @@ func New() (q *queue) {
 //@description
 //		以queue队列容器做接收者
 //		将queue队列容器中不使用空间释放掉
-//@return    	q        	*queue					接收者的queue指针
+//@return    	q        	*Queue					接收者的queue指针
 //@param    	nil
 //@return    	i        	*iterator.Iterator		新建的Iterator迭代器指针
-func (q *queue) Iterator() (i *Iterator.Iterator) {
+func (q *Queue) Iterator() (i *Iterator.Iterator) {
 	if q == nil {
 		q = New()
 	}
@@ -88,10 +88,10 @@ func (q *queue) Iterator() (i *Iterator.Iterator) {
 //		返回该容器当前含有元素的数量
 //		该长度并非实际占用空间数量
 //		若容器为空则返回0
-//@receiver		q			*queue					接受者queue的指针
+//@receiver		q			*Queue					接受者queue的指针
 //@param    	nil
-//@return    	size        	uint64						容器中实际使用元素所占空间大小
-func (q *queue) Size() (size uint64) {
+//@return    	size        uint64						容器中实际使用元素所占空间大小
+func (q *Queue) Size() (size uint64) {
 	if q == nil {
 		q = New()
 	}
@@ -103,10 +103,10 @@ func (q *queue) Size() (size uint64) {
 //		以queue队列容器做接收者
 //		将该容器中所承载的元素清空
 //		将该容器的首尾指针均置0,容量设为1
-//@receiver		q			*queue					接受者queue的指针
+//@receiver		q			*Queue					接受者queue的指针
 //@param    	nil
 //@return    	nil
-func (q *queue) Clear() {
+func (q *Queue) Clear() {
 	if q == nil {
 		q = New()
 	}
@@ -128,10 +128,10 @@ func (q *queue) Clear() {
 //		该判断过程通过首尾指针数值进行判断
 //		当尾指针数值等于首指针时说明不含有元素
 //		当尾指针数值大于首指针时说明含有元素
-//@receiver		q			*queue					接受者queue的指针
+//@receiver		q			*Queue					接受者queue的指针
 //@param    	nil
 //@return    	b			bool					该容器是空的吗?
-func (q *queue) Empty() (b bool) {
+func (q *Queue) Empty() (b bool) {
 	if q == nil {
 		q = New()
 	}
@@ -145,10 +145,10 @@ func (q *queue) Empty() (b bool) {
 //		若尾指针小于切片实际使用长度,则对当前指针位置进行覆盖,同时尾下标后移一位
 //		若尾指针等于切片实际使用长度,则对实际使用量和实际占用量进行判断
 //		当首部还有冗余时则删将实际使用整体前移到首部,否则对尾部进行扩容即可
-//@receiver		q			*queue					接受者queue的指针
+//@receiver		q			*Queue					接受者queue的指针
 //@param    	e			interface{}				待插入元素
 //@return    	nil
-func (q *queue) Push(e interface{}) {
+func (q *Queue) Push(e interface{}) {
 	if q == nil {
 		q = New()
 	}
@@ -198,10 +198,10 @@ func (q *queue) Push(e interface{}) {
 //		所以可以对首部预留2^10的冗余,当超过时直接对首部冗余清除即可,释放首部空间时尾部空间仍然保留不变
 //		当首部冗余不足2^10时,但冗余超过实际使用空间,也会对首部进行缩容,尾部不变
 //		同时返回队首元素
-//@receiver		q			*queue					接受者queue的指针
+//@receiver		q			*Queue					接受者queue的指针
 //@param    	nil
 //@return    	e 			interface{}				队首元素
-func (q *queue) Pop() (e interface{}) {
+func (q *Queue) Pop() (e interface{}) {
 	if q == nil {
 		q = New()
 		return nil
@@ -231,10 +231,10 @@ func (q *queue) Pop() (e interface{}) {
 //		以queue队列容器做接收者
 //		返回该容器的第一个元素
 //		若该容器当前为空,则返回nil
-//@receiver		q			*queue					接受者queue的指针
+//@receiver		q			*Queue					接受者queue的指针
 //@param    	nil
 //@return    	e			interface{}				容器的第一个元素
-func (q *queue) Front() (e interface{}) {
+func (q *Queue) Front() (e interface{}) {
 	if q == nil {
 		q = New()
 		return nil
@@ -251,10 +251,10 @@ func (q *queue) Front() (e interface{}) {
 //		以queue队列容器做接收者
 //		返回该容器的最后一个元素
 //		若该容器当前为空,则返回nil
-//@receiver		q			*queue					接受者queue的指针
+//@receiver		q			*Queue					接受者queue的指针
 //@param    	nil
 //@return    	e			interface{}				容器的最后一个元素
-func (q *queue) Back() (e interface{}) {
+func (q *Queue) Back() (e interface{}) {
 	if q == nil {
 		q = New()
 		return nil

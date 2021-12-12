@@ -20,7 +20,7 @@ import (
 //当冗余空间不足时先倍增空间至2^16，超过后每次增加2^16的空间
 //删除结点后如果冗余超过2^16,则释放掉
 //删除后若冗余量超过使用量，也释放掉冗余空间
-type stack struct {
+type Stack struct {
 	data  []interface{} //用于存储元素的动态数组
 	top   uint64        //顶部指针
 	cap   uint64        //动态数组的实际空间
@@ -47,9 +47,9 @@ type stacker interface {
 //		初始stack的顶部指针置0，容量置1
 //@receiver		nil
 //@param    	nil
-//@return    	s        	*stack					新建的stack指针
-func New() (s *stack) {
-	return &stack{
+//@return    	s        	*Stack					新建的stack指针
+func New() (s *Stack) {
+	return &Stack{
 		data:  make([]interface{}, 1, 1),
 		top:   0,
 		cap:   1,
@@ -62,10 +62,10 @@ func New() (s *stack) {
 //		以stack栈容器做接收者
 //		将stack栈容器中不使用空间释放掉
 //		返回一个包含容器中所有使用元素的迭代器
-//@receiver		s			*stack					接受者stack的指针
+//@receiver		s			*Stack					接受者stack的指针
 //@param    	nil
 //@return    	i        	*iterator.Iterator		新建的Iterator迭代器指针
-func (s *stack) Iterator() (i *Iterator.Iterator) {
+func (s *Stack) Iterator() (i *Iterator.Iterator) {
 	if s == nil {
 		s = New()
 	}
@@ -91,10 +91,10 @@ func (s *stack) Iterator() (i *Iterator.Iterator) {
 //@description
 //		以stack栈容器做接收者
 //		返回该容器当前含有元素的数量
-//@receiver		s			*stack					接受者stack的指针
+//@receiver		s			*Stack					接受者stack的指针
 //@param    	nil
 //@return    	num        	int						容器中实际使用元素所占空间大小
-func (s *stack) Size() (num uint64) {
+func (s *Stack) Size() (num uint64) {
 	if s == nil {
 		s = New()
 	}
@@ -106,10 +106,10 @@ func (s *stack) Size() (num uint64) {
 //		以stack栈容器做接收者
 //		将该容器中所承载的元素清空
 //		将该容器的尾指针置0
-//@receiver		s			*stack					接受者stack的指针
+//@receiver		s			*Stack					接受者stack的指针
 //@param    	nil
 //@return    	nil
-func (s *stack) Clear() {
+func (s *Stack) Clear() {
 	if s == nil {
 		s = New()
 	}
@@ -130,10 +130,10 @@ func (s *stack) Clear() {
 //		该判断过程通过顶部指针数值进行判断
 //		当顶部指针数值为0时说明不含有元素
 //		当顶部指针数值大于0时说明含有元素
-//@receiver		s			*stack					接受者stack的指针
+//@receiver		s			*Stack					接受者stack的指针
 //@param    	nil
 //@return    	b			bool					该容器是空的吗?
-func (s *stack) Empty() (b bool) {
+func (s *Stack) Empty() (b bool) {
 	if s == nil {
 		return true
 	}
@@ -146,10 +146,10 @@ func (s *stack) Empty() (b bool) {
 //		在容器顶部插入元素
 //		若存储冗余空间，则在顶部指针位插入元素，随后上移顶部指针
 //		否则进行扩容，扩容后获得冗余空间重复上一步即可。
-//@receiver		s			*stack					接受者stack的指针
+//@receiver		s			*Stack					接受者stack的指针
 //@param    	e			interface{}				待插入顶部的元素
 //@return    	nil
-func (s *stack) Push(e interface{}) {
+func (s *Stack) Push(e interface{}) {
 	if s == nil {
 		s = New()
 	}
@@ -185,10 +185,10 @@ func (s *stack) Push(e interface{}) {
 //		弹出容器顶部元素,同时顶部指针下移一位
 //		当顶部指针小于容器切片实际使用空间的一半时,重新分配空间释放未使用部分
 //		若容器为空,则不进行弹出
-//@receiver		s			*stack					接受者stack的指针
+//@receiver		s			*Stack					接受者stack的指针
 //@param    	nil
 //@return    	nil
-func (s *stack) Pop() {
+func (s *Stack) Pop() {
 	if s == nil {
 		s = New()
 		return
@@ -219,10 +219,10 @@ func (s *stack) Pop() {
 //		以stack栈容器做接收者
 //		返回该容器的顶部元素
 //		若该容器当前为空,则返回nil
-//@receiver		s			*stack					接受者stack的指针
+//@receiver		s			*Stack					接受者stack的指针
 //@param    	nil
 //@return    	e			interface{}				容器的顶部元素
-func (s *stack) Top() (e interface{}) {
+func (s *Stack) Top() (e interface{}) {
 	if s == nil {
 		return nil
 	}

@@ -21,7 +21,7 @@ import (
 //当一个节点进行增删时需要同步修改其临接结点的前后指针
 //结构体中记录整个链表的首尾指针,同时记录其当前已承载的元素
 //使用并发控制锁以保证数据一致性
-type list struct {
+type List struct {
 	first *node      //链表首节点指针
 	last  *node      //链表尾节点指针
 	size  uint64     //当前存储的元素个数
@@ -53,9 +53,9 @@ type lister interface {
 //		初始size为0
 //@receiver		nil
 //@param    	nil
-//@return    	l        	*list					新建的list指针
-func New() (l *list) {
-	return &list{
+//@return    	l        	*List					新建的list指针
+func New() (l *List) {
+	return &List{
 		first: nil,
 		last:  nil,
 		size:  0,
@@ -67,10 +67,10 @@ func New() (l *list) {
 //@description
 //		以list链表容器做接收者
 //		将list链表容器中所承载的元素放入迭代器中
-//@receiver    	l        	*list					接收者的list指针
+//@receiver    	l        	*List					接收者的list指针
 //@param    	nil
 //@return    	i        	*iterator.Iterator		新建的Iterator迭代器指针
-func (l *list) Iterator() (i *Iterator.Iterator) {
+func (l *List) Iterator() (i *Iterator.Iterator) {
 	if l == nil {
 		l = New()
 	}
@@ -90,10 +90,10 @@ func (l *list) Iterator() (i *Iterator.Iterator) {
 //		以list链表容器做接收者
 //		将list链表容器中所承载的元素利用比较器进行排序
 //		可以自行传入比较函数,否则将调用默认比较函数
-//@receiver    	l        	*list						接收者的list指针
+//@receiver    	l        	*List						接收者的list指针
 //@param    	Cmp			...comparator.Comparator	比较函数
 //@return		nil
-func (l *list) Sort(Cmp ...comparator.Comparator) {
+func (l *List) Sort(Cmp ...comparator.Comparator) {
 	if l == nil {
 		l = New()
 	}
@@ -119,10 +119,10 @@ func (l *list) Sort(Cmp ...comparator.Comparator) {
 //@description
 //		以list链表容器做接收者
 //		返回该容器当前含有元素的数量
-//@receiver    	l        	*list						接收者的list指针
+//@receiver    	l        	*List						接收者的list指针
 //@param    	nil
 //@return    	num        	int							容器中所承载的元素数量
-func (l *list) Size() (size uint64) {
+func (l *List) Size() (size uint64) {
 	if l == nil {
 		l = New()
 	}
@@ -134,10 +134,10 @@ func (l *list) Size() (size uint64) {
 //		以list链表容器做接收者
 //		将该容器中所承载的元素清空
 //		将该容器的首尾指针均置nil,将size重置为0
-//@receiver    	l        	*list						接收者的list指针
+//@receiver    	l        	*List						接收者的list指针
 //@param    	nil
 //@return    	nil
-func (l *list) Clear() {
+func (l *List) Clear() {
 	if l == nil {
 		l = New()
 	}
@@ -157,10 +157,10 @@ func (l *list) Clear() {
 //		如果不含有元素则说明为空,返回true
 //		如果容器不存在,返回true
 //		该判断过程通过size进行判断,为0则为true,否则为false
-//@receiver    	l        	*list						接收者的list指针
+//@receiver    	l        	*List						接收者的list指针
 //@param    	nil
 //@return    	b			bool					该容器是空的吗?
-func (l *list) Empty() (b bool) {
+func (l *List) Empty() (b bool) {
 	if l == nil {
 		l = New()
 	}
@@ -173,10 +173,10 @@ func (l *list) Empty() (b bool) {
 //		通过链表的首尾结点进行元素插入
 //		插入的元素可以有很多个
 //		通过判断idx
-//@receiver    	l        	*list						接收者的list指针
+//@receiver    	l        	*List						接收者的list指针
 //@param    	e			interface{}					待插入元素
 //@return    	nil
-func (l *list) Insert(idx uint64, e interface{}) {
+func (l *List) Insert(idx uint64, e interface{}) {
 	if l == nil {
 		l = New()
 	}
@@ -227,10 +227,10 @@ func (l *list) Insert(idx uint64, e interface{}) {
 //		当链表所承载的元素全部删除后则销毁链表
 //		删除时通过idx与总元素数量选择从前或从后进行遍历以找到对应位置
 //		删除后,将该位置的前后结点连接起来,以保证链表不断裂
-//@receiver    	l        	*list						接收者的list指针
+//@receiver    	l        	*List						接收者的list指针
 //@param    	idx			uint64						被删除结点的下标(从0开始)
 //@return    	nil
-func (l *list) Erase(idx uint64) {
+func (l *List) Erase(idx uint64) {
 	if l == nil {
 		l = New()
 	}
@@ -276,10 +276,10 @@ func (l *list) Erase(idx uint64) {
 //@description
 //		以list链表容器做接收者
 //		获取第idx位结点所承载的元素,若不在链表范围内则返回nil
-//@receiver    	l        	*list						接收者的list指针
+//@receiver    	l        	*List						接收者的list指针
 //@param    	idx			uint64						被获取的结点位置(从0开始)
 //@return    	e			interface{}					获取的元素
-func (l *list) Get(idx uint64) (e interface{}) {
+func (l *List) Get(idx uint64) (e interface{}) {
 	if l == nil {
 		l = New()
 	}
@@ -310,11 +310,11 @@ func (l *list) Get(idx uint64) (e interface{}) {
 //@description
 //		以list链表容器做接收者
 //		修改第idx为结点所承载的元素,超出范围则不修改
-//@receiver    	l        	*list						接收者的list指针
+//@receiver    	l        	*List						接收者的list指针
 //@param    	idx			uint64						被修改的结点位置(从0开始)
 //@param    	e			interface{}					修改后当元素
 //@return		nil
-func (l *list) Set(idx uint64, e interface{}) {
+func (l *List) Set(idx uint64, e interface{}) {
 	if l == nil {
 		l = New()
 	}
@@ -346,11 +346,11 @@ func (l *list) Set(idx uint64, e interface{}) {
 //		返回与e相同的元素的首个位置
 //		可以自行传入用于判断相等的相等器进行处理
 //		遍历从头至尾,如果不存在则返回l.size
-//@receiver    	l        	*list						接收者的list指针
+//@receiver    	l        	*List						接收者的list指针
 //@param    	e			interface{}					要查找的元素
 //@param    	Equ			...comparator.Equaler		相等器
 //@param    	idx			uint64						首下标
-func (l *list) IndexOf(e interface{}, Equ ...comparator.Equaler) (idx uint64) {
+func (l *List) IndexOf(e interface{}, Equ ...comparator.Equaler) (idx uint64) {
 	if l == nil {
 		l = New()
 	}
@@ -378,11 +378,11 @@ func (l *list) IndexOf(e interface{}, Equ ...comparator.Equaler) (idx uint64) {
 //		以list链表容器做接收者
 //		以begin为起点(包含),最多复制num个元素进入新链表
 //		并返回新链表指针
-//@receiver    	l        	*list						接收者的list指针
+//@receiver    	l        	*List						接收者的list指针
 //@param    	begin		uint64						复制起点
 //@param    	num			uint64						复制个数上限
-//@param    	newList		*list						新链表指针
-func (l *list) SubList(begin, num uint64) (newList *list) {
+//@param    	newList		*List						新链表指针
+func (l *List) SubList(begin, num uint64) (newList *List) {
 	if l == nil {
 		l = New()
 	}

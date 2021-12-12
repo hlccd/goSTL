@@ -25,7 +25,7 @@ import (
 //并发控制锁用以保证在高并发过程中不会出现错误
 //使用比较器重载了Sort
 
-type vector struct {
+type Vector struct {
 	data  []interface{} //动态数组
 	len   uint64        //当前已用数量
 	cap   uint64        //可容纳元素数量
@@ -59,9 +59,9 @@ type vectorer interface {
 //		初始vector的长度为0,容量为1
 //@receiver		nil
 //@param    	nil
-//@return    	v        	*vector					新建的vector指针
-func New() (v *vector) {
-	return &vector{
+//@return    	v        	*Vector					新建的vector指针
+func New() (v *Vector) {
+	return &Vector{
 		data:  make([]interface{}, 1, 1),
 		len:   0,
 		cap:   1,
@@ -74,10 +74,10 @@ func New() (v *vector) {
 //		以vector向量容器做接收者
 //		释放未使用的空间,并将已使用的部分用于创建迭代器
 //		返回一个包含容器中所有使用元素的迭代器
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	nil
 //@return    	i        	*iterator.Iterator		新建的Iterator迭代器指针
-func (v *vector) Iterator() (i *Iterator.Iterator) {
+func (v *Vector) Iterator() (i *Iterator.Iterator) {
 	if v == nil {
 		v = New()
 	}
@@ -104,10 +104,10 @@ func (v *vector) Iterator() (i *Iterator.Iterator) {
 //		以vector向量容器做接收者
 //		将vector向量容器中不使用空间释放掉
 //		对元素中剩余的部分进行排序
-//@receiver		v			*vector						接受者vector的指针
+//@receiver		v			*Vector						接受者vector的指针
 //@param    	Cmp			...comparator.Comparator	比较函数
 //@return    	nil
-func (v *vector) Sort(Cmp ...comparator.Comparator) {
+func (v *Vector) Sort(Cmp ...comparator.Comparator) {
 	if v == nil {
 		v = New()
 	}
@@ -138,10 +138,10 @@ func (v *vector) Sort(Cmp ...comparator.Comparator) {
 //		以vector向量容器做接收者
 //		返回该容器当前含有元素的数量
 //		该长度并非实际占用空间数量,而是实际使用空间
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	nil
 //@return    	num        	int						容器中实际使用元素所占空间大小
-func (v *vector) Size() (num uint64) {
+func (v *Vector) Size() (num uint64) {
 	if v == nil {
 		v = New()
 	}
@@ -152,10 +152,10 @@ func (v *vector) Size() (num uint64) {
 //@description
 //		以vector向量容器做接收者
 //		将该容器中的动态数组重置,所承载的元素清空
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	nil
 //@return    	nil
-func (v *vector) Clear() {
+func (v *Vector) Clear() {
 	if v == nil {
 		v = New()
 	}
@@ -176,10 +176,10 @@ func (v *vector) Clear() {
 //		该判断过程通过长度进行判断
 //		当长度为0时说明不含有元素
 //		当长度大于0时说明含有元素
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	nil
 //@return    	b			bool					该容器是空的吗?
-func (v *vector) Empty() (b bool) {
+func (v *Vector) Empty() (b bool) {
 	if v == nil {
 		v = New()
 	}
@@ -193,10 +193,10 @@ func (v *vector) Empty() (b bool) {
 //		若长度小于容量时,则对以长度为下标的位置进行覆盖,同时len++
 //		若长度等于容量时,需要进行扩容
 //		对于扩容而言,当容量小于2^16时,直接将容量翻倍,否则将容量增加2^16
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	e			interface{}				待插入元素
 //@return    	nil
-func (v *vector) PushBack(e interface{}) {
+func (v *Vector) PushBack(e interface{}) {
 	if v == nil {
 		v = New()
 	}
@@ -234,10 +234,10 @@ func (v *vector) PushBack(e interface{}) {
 //		当弹出元素后,可能进行缩容
 //		当容量和实际使用差值超过2^16时,容量直接减去2^16
 //		否则,当实际使用长度是容量的一半时,进行折半缩容
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	nil
 //@return    	nil
-func (v *vector) PopBack() {
+func (v *Vector) PopBack() {
 	if v == nil {
 		v = New()
 	}
@@ -271,11 +271,11 @@ func (v *vector) PopBack() {
 //		否则在切片中间第idx位插入元素,同时后移第idx位以后的元素
 //		根据冗余量选择是否扩容,扩容策略同上
 //		插入后len++
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	idx			uint64					待插入节点的位置(下标从0开始)
 //@param		e			interface{}				待插入元素
 //@return    	nil
-func (v *vector) Insert(idx uint64, e interface{}) {
+func (v *Vector) Insert(idx uint64, e interface{}) {
 	if v == nil {
 		v = New()
 	}
@@ -317,10 +317,10 @@ func (v *vector) Insert(idx uint64, e interface{}) {
 //		否则在切片中间第idx位删除元素,同时前移第idx位以后的元素
 //		长度同步--
 //		进行缩容判断,缩容策略同上
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	idx			uint64					待删除节点的位置(下标从0开始)
 //@return    	nil
-func (v *vector) Erase(idx uint64) {
+func (v *Vector) Erase(idx uint64) {
 	if v == nil {
 		v = New()
 	}
@@ -353,10 +353,10 @@ func (v *vector) Erase(idx uint64) {
 //		以vector向量容器做接收者
 //		将vector容器中不使用空间释放掉
 //		将该容器中的泛型切片中的所有元素顺序逆转
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param		nil
 //@return    	nil
-func (v *vector) Reverse() {
+func (v *Vector) Reverse() {
 	if v == nil {
 		v = New()
 	}
@@ -386,10 +386,10 @@ func (v *vector) Reverse() {
 //		当idx不在容器中泛型切片的使用范围内
 //		即当idx小于0或者idx大于容器所含有的元素个数时返回nil
 //		反之返回对应位置的元素
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	idx			uint64					待查找元素的位置(下标从0开始)
 //@return    	e			interface{}				从容器中查找的第idx位元素
-func (v *vector) At(idx uint64) (e interface{}) {
+func (v *Vector) At(idx uint64) (e interface{}) {
 	if v == nil {
 		v=New()
 		return nil
@@ -413,10 +413,10 @@ func (v *vector) At(idx uint64) (e interface{}) {
 //		以vector向量容器做接收者
 //		返回该容器的第一个元素
 //		若该容器当前为空,则返回nil
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	nil
 //@return    	e			interface{}				容器的第一个元素
-func (v *vector) Front() (e interface{}) {
+func (v *Vector) Front() (e interface{}) {
 	if v == nil {
 		v=New()
 		return nil
@@ -436,11 +436,10 @@ func (v *vector) Front() (e interface{}) {
 //		以vector向量容器做接收者
 //		返回该容器的最后一个元素
 //		若该容器当前为空,则返回nil
-//@auth      	hlccd		2021-07-4
-//@receiver		v			*vector					接受者vector的指针
+//@receiver		v			*Vector					接受者vector的指针
 //@param    	nil
 //@return    	e			interface{}				容器的最后一个元素
-func (v *vector) Back() (e interface{}) {
+func (v *Vector) Back() (e interface{}) {
 	if v == nil {
 		v=New()
 		return nil

@@ -21,7 +21,7 @@ import (
 //同时保存该二叉树已经存储了多少个元素
 //二叉树中排序使用的比较器在创建时传入,若不传入则在插入首个节点时从默认比较器中寻找
 //创建时传入是否允许该二叉树出现重复值,如果不允许则进行覆盖,允许则对节点数目增加即可
-type bsTree struct {
+type BsTree struct {
 	root    *node                 //根节点指针
 	size    uint64                //存储元素数量
 	cmp     comparator.Comparator //比较器
@@ -51,8 +51,8 @@ type bsTreeer interface {
 //@receiver		nil
 //@param    	isMulti		bool						该二叉树是否保存重复值?
 //@param    	Cmp			 ...comparator.Comparator	bsTree比较器集
-//@return    	bs        	*bsTree						新建的bsTree指针
-func New(isMulti bool, Cmp ...comparator.Comparator) (bs *bsTree) {
+//@return    	bs        	*BsTree						新建的bsTree指针
+func New(isMulti bool, Cmp ...comparator.Comparator) (bs *BsTree) {
 	//判断是否有传入比较器,若有则设为该二叉树默认比较器
 	var cmp comparator.Comparator
 	if len(Cmp) == 0 {
@@ -60,7 +60,7 @@ func New(isMulti bool, Cmp ...comparator.Comparator) (bs *bsTree) {
 	} else {
 		cmp = Cmp[0]
 	}
-	return &bsTree{
+	return &BsTree{
 		root:    nil,
 		size:    0,
 		cmp:     cmp,
@@ -74,10 +74,10 @@ func New(isMulti bool, Cmp ...comparator.Comparator) (bs *bsTree) {
 //		以bsTree二叉搜索树做接收者
 //		将该二叉树中所有保存的元素将从根节点开始以中缀序列的形式放入迭代器中
 //		若允许重复存储则对于重复元素进行多次放入
-//@receiver		bt			*bsTree					接受者bsTree的指针
+//@receiver		bt			*BsTree					接受者bsTree的指针
 //@param    	nil
 //@return    	i        	*iterator.Iterator		新建的Iterator迭代器指针
-func (bs *bsTree) Iterator() (i *Iterator.Iterator) {
+func (bs *BsTree) Iterator() (i *Iterator.Iterator) {
 	if bs == nil {
 		//创建一个允许插入重复值的二叉搜
 		bs = New(true)
@@ -94,10 +94,10 @@ func (bs *bsTree) Iterator() (i *Iterator.Iterator) {
 //		以bsTree二叉搜索树做接收者
 //		返回该容器当前含有元素的数量
 //		如果容器为nil则创建一个并返回其承载的元素个数
-//@receiver		bt			*bsTree					接受者bsTree的指针
+//@receiver		bt			*BsTree					接受者bsTree的指针
 //@param    	nil
 //@return    	num        	uint64					容器中实际使用元素所占空间大小
-func (bs *bsTree) Size() (num uint64) {
+func (bs *BsTree) Size() (num uint64) {
 	if bs == nil {
 		//创建一个允许插入重复值的二叉搜
 		bs = New(true)
@@ -110,10 +110,10 @@ func (bs *bsTree) Size() (num uint64) {
 //		以bsTree二叉搜索树做接收者
 //		将该容器中所承载的元素清空
 //		将该容器的size置0
-//@receiver		bt			*bsTree					接受者bsTree的指针
+//@receiver		bt			*BsTree					接受者bsTree的指针
 //@param    	nil
 //@return    	nil
-func (bs *bsTree) Clear() {
+func (bs *BsTree) Clear() {
 	if bs == nil {
 		//创建一个允许插入重复值的二叉搜
 		bs = New(true)
@@ -131,10 +131,10 @@ func (bs *bsTree) Clear() {
 //		如果含有元素则不为空,返回false
 //		如果不含有元素则说明为空,返回true
 //		如果容器不存在,返回true
-//@receiver		bt			*bsTree					接受者bsTree的指针
+//@receiver		bt			*BsTree					接受者bsTree的指针
 //@param    	nil
 //@return    	b			bool					该容器是空的吗?
-func (bs *bsTree) Empty() (b bool) {
+func (bs *BsTree) Empty() (b bool) {
 	if bs == nil {
 		//创建一个允许插入重复值的二叉搜
 		bs = New(true)
@@ -148,10 +148,10 @@ func (bs *bsTree) Empty() (b bool) {
 //		向二叉树插入元素e,若不允许重复则对相等元素进行覆盖
 //		如果二叉树为空则之间用根节点承载元素e,否则以根节点开始进行查找
 //		不做平衡
-//@receiver		bt			*bsTree					接受者bsTree的指针
+//@receiver		bt			*BsTree					接受者bsTree的指针
 //@param    	e			interface{}				待插入元素
 //@return    	nil
-func (bs *bsTree) Insert(e interface{}) {
+func (bs *BsTree) Insert(e interface{}) {
 	if bs == nil {
 		//创建一个允许插入重复值的二叉搜
 		bs = New(true)
@@ -185,10 +185,10 @@ func (bs *bsTree) Insert(e interface{}) {
 //		若允许重复记录则对承载元素e的节点中数量记录减一即可
 //		若不允许重复记录则删除该节点同时将前缀节点或后继节点更换过来以保证二叉树的不发送断裂
 //		如果该二叉树仅持有一个元素且根节点等价于待删除元素,则将二叉树根节点置为nil
-//@receiver		bt			*bsTree					接受者bsTree的指针
+//@receiver		bt			*BsTree					接受者bsTree的指针
 //@param    	e			interface{}				待删除元素
 //@return    	nil
-func (bs *bsTree) Erase(e interface{}) {
+func (bs *BsTree) Erase(e interface{}) {
 	if bs == nil {
 		//创建一个允许插入重复值的二叉搜
 		bs = New(true)
@@ -219,10 +219,10 @@ func (bs *bsTree) Erase(e interface{}) {
 //		如果找到则返回该二叉树中和元素e相同元素的个数
 //		如果不允许重复则最多返回1
 //		如果未找到则返回0
-//@receiver		bt			*bsTree					接受者bsTree的指针
+//@receiver		bt			*BsTree					接受者bsTree的指针
 //@param    	e			interface{}				待查找元素
 //@return    	num			uint64					待查找元素在二叉树中存储的个数
-func (bs *bsTree) Count(e interface{}) (num uint64) {
+func (bs *BsTree) Count(e interface{}) (num uint64) {
 	if bs == nil {
 		//二叉树不存在,返回0
 		return 0

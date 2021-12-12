@@ -20,7 +20,7 @@ import (
 //当一个节点全部被删除后则释放该节点,同时首尾节点做相应调整
 //当添加节点时若未占满节点空间时移动下标并做覆盖即可
 //当添加节点时空间已使用完毕时,根据添加位置新建一个新节点补充上去
-type deque struct {
+type Deque struct {
 	first *node      //链表首节点指针
 	last  *node      //链表尾节点指针
 	size  uint64     //当前存储的元素个数
@@ -38,8 +38,8 @@ type dequer interface {
 	Empty() (b bool)                  //判断该双向队列是否为空
 	PushFront(e interface{})          //将元素e添加到该双向队列的首部
 	PushBack(e interface{})           //将元素e添加到该双向队列的尾部
-	PopFront()                        //将该双向队列首元素弹出
-	PopBack()                         //将该双向队列首元素弹出
+	PopFront() (e interface{})        //将该双向队列首元素弹出
+	PopBack() (e interface{})         //将该双向队列首元素弹出
 	Front() (e interface{})           //获取该双向队列首部元素
 	Back() (e interface{})            //获取该双向队列尾部元素
 }
@@ -51,9 +51,9 @@ type dequer interface {
 //		初始size为0
 //@receiver		nil
 //@param    	nil
-//@return    	d        	*deque					新建的deque指针
-func New() *deque {
-	return &deque{
+//@return    	d        	*Deque					新建的deque指针
+func New() *Deque {
+	return &Deque{
 		first: nil,
 		last:  nil,
 		size:  0,
@@ -66,10 +66,10 @@ func New() *deque {
 //		以deque双向队列容器做接收者
 //		将deque双向队列容器中所承载的元素放入迭代器中
 //		节点的冗余空间不释放
-//@receiver    	d        	*deque					接收者的deque指针
+//@receiver    	d        	*Deque					接收者的deque指针
 //@param    	nil
 //@return    	i        	*iterator.Iterator		新建的Iterator迭代器指针
-func (d *deque) Iterator() (i *Iterator.Iterator) {
+func (d *Deque) Iterator() (i *Iterator.Iterator) {
 	if d == nil {
 		d = New()
 	}
@@ -87,10 +87,10 @@ func (d *deque) Iterator() (i *Iterator.Iterator) {
 //		返回该容器当前含有元素的数量
 //		该长度并非实际占用空间数量
 //		若容器为空则返回0
-//@receiver    	d        	*deque					接收者的deque指针
+//@receiver    	d        	*Deque					接收者的deque指针
 //@param    	nil
 //@return    	size       	uint64					容器中实际使用元素所占空间大小
-func (d *deque) Size() (size uint64) {
+func (d *Deque) Size() (size uint64) {
 	if d == nil {
 		d = New()
 	}
@@ -102,10 +102,10 @@ func (d *deque) Size() (size uint64) {
 //		以deque双向队列容器做接收者
 //		将该容器中所承载的元素清空
 //		将该容器的首尾指针均置nil,将size重置为0
-//@receiver    	d        	*deque					接收者的deque指针
+//@receiver    	d        	*Deque					接收者的deque指针
 //@param    	nil
 //@return    	nil
-func (d *deque) Clear() {
+func (d *Deque) Clear() {
 	if d == nil {
 		d = New()
 		return
@@ -125,10 +125,10 @@ func (d *deque) Clear() {
 //		如果不含有元素则说明为空,返回true
 //		如果容器不存在,返回true
 //		该判断过程通过size进行判断,为0则为true,否则为false
-//@receiver    	d        	*deque					接收者的deque指针
+//@receiver    	d        	*Deque					接收者的deque指针
 //@param    	nil
 //@return    	b			bool					该容器是空的吗?
-func (d *deque) Empty() (b bool) {
+func (d *Deque) Empty() (b bool) {
 	if d == nil {
 		d = New()
 	}
@@ -140,10 +140,10 @@ func (d *deque) Empty() (b bool) {
 //		以deque双向队列向量容器做接收者
 //		在容器首部插入元素
 //		通过链表首节点进行添加
-//@receiver    	d        	*deque					接收者的deque指针
+//@receiver    	d        	*Deque					接收者的deque指针
 //@param    	e			interface{}				待插入元素
 //@return    	nil
-func (d *deque) PushFront(e interface{}) {
+func (d *Deque) PushFront(e interface{}) {
 	if d == nil {
 		d = New()
 	}
@@ -163,10 +163,10 @@ func (d *deque) PushFront(e interface{}) {
 //		以deque双向队列向量容器做接收者
 //		在容器尾部插入元素
 //		通过链表尾节点进行添加
-//@receiver    	d        	*deque					接收者的deque指针
+//@receiver    	d        	*Deque					接收者的deque指针
 //@param    	e			interface{}				待插入元素
 //@return    	nil
-func (d *deque) PushBack(e interface{}) {
+func (d *Deque) PushBack(e interface{}) {
 	if d == nil {
 		d = New()
 	}
@@ -186,19 +186,20 @@ func (d *deque) PushBack(e interface{}) {
 //		以deque双向队列容器做接收者
 //		利用首节点进行弹出元素,可能存在首节点全部释放要进行首节点后移的情况
 //		当元素全部删除后,释放全部空间,将首尾节点都设为nil
-//@receiver    	d        	*deque					接收者的deque指针
+//@receiver    	d        	*Deque					接收者的deque指针
 //@param    	nil
-//@return    	nil
-func (d *deque) PopFront() {
+//@return    	e			interface{}				首元素
+func (d *Deque) PopFront() (e interface{}) {
 	if d == nil {
 		d = New()
 	}
 	if d.size == 0 {
-		return
+		return nil
 	}
 	d.mutex.Lock()
 	//利用首节点删除首元素
 	//返回新的首节点
+	e = d.first.front()
 	d.first = d.first.popFront()
 	d.size--
 	if d.size == 0 {
@@ -207,6 +208,7 @@ func (d *deque) PopFront() {
 		d.last = nil
 	}
 	d.mutex.Unlock()
+	return e
 }
 
 //@title    PopBack
@@ -214,20 +216,21 @@ func (d *deque) PopFront() {
 //		以deque双向队列容器做接收者
 //		利用尾节点进行弹出元素,可能存在尾节点全部释放要进行尾节点前移的情况
 //		当元素全部删除后,释放全部空间,将首尾节点都设为nil
-//@receiver    	d        	*deque					接收者的deque指针
+//@receiver    	d        	*Deque					接收者的deque指针
 //@param    	nil
-//@return    	nil
-func (d *deque) PopBack() {
+//@return    	e			interface{}				尾元素
+func (d *Deque) PopBack() (e interface{}) {
 	if d == nil {
 		d = New()
 	}
 	if d.size == 0 {
-		return
+		return nil
 	}
 	d.mutex.Lock()
 	//利用尾节点删除首元素
 	//返回新的尾节点
 	d.last = d.last.popBack()
+	e = d.last.back()
 	d.size--
 	if d.size == 0 {
 		//全部删除完成,释放空间,并将首尾节点设为nil
@@ -235,6 +238,7 @@ func (d *deque) PopBack() {
 		d.last = nil
 	}
 	d.mutex.Unlock()
+	return e
 }
 
 //@title    Front
@@ -242,10 +246,10 @@ func (d *deque) PopBack() {
 //		以deque双向队列容器做接收者
 //		返回该容器的第一个元素,利用首节点进行寻找
 //		若该容器当前为空,则返回nil
-//@receiver    	d        	*deque					接收者的deque指针
+//@receiver    	d        	*Deque					接收者的deque指针
 //@param    	nil
 //@return    	e			interface{}				容器的第一个元素
-func (d *deque) Front() (e interface{}) {
+func (d *Deque) Front() (e interface{}) {
 	if d == nil {
 		d = New()
 	}
@@ -257,10 +261,10 @@ func (d *deque) Front() (e interface{}) {
 //		以deque双向队列容器做接收者
 //		返回该容器的最后一个元素,利用尾节点进行寻找
 //		若该容器当前为空,则返回nil
-//@receiver    	d        	*deque					接收者的deque指针
+//@receiver    	d        	*Deque					接收者的deque指针
 //@param    	nil
 //@return    	e			interface{}				容器的最后一个元素
-func (d *deque) Back() (e interface{}) {
+func (d *Deque) Back() (e interface{}) {
 	if d == nil {
 		d = New()
 	}
