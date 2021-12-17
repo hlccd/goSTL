@@ -16,7 +16,7 @@ import (
 //树堆节点将针对堆的性质通过左右旋转的方式做平衡
 type node struct {
 	value    interface{} //节点中存储的元素
-	priority uint16      //该节点的优先级,随机生成
+	priority uint32      //该节点的优先级,随机生成
 	num      int         //该节点中存储的数量
 	left     *node       //左节点指针
 	right    *node       //右节点指针
@@ -35,7 +35,7 @@ type node struct {
 func newNode(e interface{}, rand *rand.Rand) (n *node) {
 	return &node{
 		value:    e,
-		priority: uint16(rand.Intn(65535)),
+		priority: uint32(rand.Intn(4294967295)),
 		num:      1,
 		left:     nil,
 		right:    nil,
