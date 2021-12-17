@@ -37,3 +37,6 @@
 
 #### 树堆:treap
 参考：https://zhuanlan.zhihu.com/p/444445554
+
+#### 平衡二叉查找树:avlTree
+参考：https://zhuanlan.zhihu.com/p/446547869
