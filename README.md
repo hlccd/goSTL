@@ -40,3 +40,6 @@
 
 #### 平衡二叉查找树:avlTree
 参考：https://zhuanlan.zhihu.com/p/446547869
+
+#### 哈希映射:hashMap
+参考：https://zhuanlan.zhihu.com/p/447063415
