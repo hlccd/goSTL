@@ -32,6 +32,7 @@ type Vector struct {
 	mutex sync.Mutex    //并发控制锁
 }
 
+const bound = 4294967296
 //vector向量容器接口
 //存放了vector容器可使用的函数
 //对应函数介绍见下方
@@ -40,6 +41,7 @@ type vectorer interface {
 	Iterator() (i *Iterator.Iterator)  //返回一个包含vector所有元素的迭代器
 	Sort(Cmp ...comparator.Comparator) //利用比较器对其进行排序
 	Size() (num uint64)                //返回vector的长度
+	Cap() (num uint64)                 //返回vector的容量
 	Clear()                            //清空vector
 	Empty() (b bool)                   //返回vector是否为空,为空则返回true反之返回false
 	PushBack(e interface{})            //向vector末尾插入一个元素
@@ -148,6 +150,20 @@ func (v *Vector) Size() (num uint64) {
 	return v.len
 }
 
+//@title    Cap
+//@description
+//		以vector向量容器做接收者
+//		返回该容器当前容量
+//@receiver		v			*Vector					接受者vector的指针
+//@param    	nil
+//@return    	num        	int						容器中实际使用元素所占空间大小
+func (v *Vector) Cap() (num uint64) {
+	if v == nil {
+		v = New()
+	}
+	return v.cap
+}
+
 //@title    Clear
 //@description
 //		以vector向量容器做接收者
@@ -192,7 +208,7 @@ func (v *Vector) Empty() (b bool) {
 //		在容器尾部插入元素
 //		若长度小于容量时,则对以长度为下标的位置进行覆盖,同时len++
 //		若长度等于容量时,需要进行扩容
-//		对于扩容而言,当容量小于2^16时,直接将容量翻倍,否则将容量增加2^16
+//		对于扩容而言,当容量小于bound时,直接将容量翻倍,否则将容量增加bound
 //@receiver		v			*Vector					接受者vector的指针
 //@param    	e			interface{}				待插入元素
 //@return    	nil
@@ -206,15 +222,15 @@ func (v *Vector) PushBack(e interface{}) {
 		v.data[v.len] = e
 	} else {
 		//冗余不足,需要扩容
-		if v.cap <= 65536 {
+		if v.cap <= bound {
 			//容量翻倍
 			if v.cap == 0 {
 				v.cap = 1
 			}
 			v.cap *= 2
 		} else {
-			//容量增加2^16
-			v.cap += 65536
+			//容量增加bound
+			v.cap += bound
 		}
 		//复制扩容前的元素
 		tmp := make([]interface{}, v.cap, v.cap)
@@ -232,7 +248,7 @@ func (v *Vector) PushBack(e interface{}) {
 //		弹出容器最后一个元素,同时长度--即可
 //		若容器为空,则不进行弹出
 //		当弹出元素后,可能进行缩容
-//		当容量和实际使用差值超过2^16时,容量直接减去2^16
+//		当容量和实际使用差值超过bound时,容量直接减去bound
 //		否则,当实际使用长度是容量的一半时,进行折半缩容
 //@receiver		v			*Vector					接受者vector的指针
 //@param    	nil
@@ -246,9 +262,9 @@ func (v *Vector) PopBack() {
 	}
 	v.mutex.Lock()
 	v.len--
-	if v.cap-v.len >= 65536 {
-		//容量和实际使用差值超过2^16时,容量直接减去2^16
-		v.cap -= 65536
+	if v.cap-v.len >= bound {
+		//容量和实际使用差值超过bound时,容量直接减去bound
+		v.cap -= bound
 		tmp := make([]interface{}, v.cap, v.cap)
 		copy(tmp, v.data)
 		v.data = tmp
@@ -283,15 +299,15 @@ func (v *Vector) Insert(idx uint64, e interface{}) {
 	var tmp []interface{}
 	if v.len >= v.cap {
 		//冗余不足,进行扩容
-		if v.cap <= 65536 {
+		if v.cap <= bound {
 			//容量翻倍
 			if v.cap == 0 {
 				v.cap = 1
 			}
 			v.cap *= 2
 		} else {
-			//容量增加2^16
-			v.cap += 65536
+			//容量增加bound
+			v.cap += bound
 		}
 		//复制扩容前的元素
 		tmp = make([]interface{}, v.cap, v.cap)
@@ -332,9 +348,9 @@ func (v *Vector) Erase(idx uint64) {
 		v.data[p] = v.data[p+1]
 	}
 	v.len--
-	if v.cap-v.len >= 65536 {
-		//容量和实际使用差值超过2^16时,容量直接减去2^16
-		v.cap -= 65536
+	if v.cap-v.len >= bound {
+		//容量和实际使用差值超过bound时,容量直接减去bound
+		v.cap -= bound
 		tmp := make([]interface{}, v.cap, v.cap)
 		copy(tmp, v.data)
 		v.data = tmp
@@ -371,7 +387,7 @@ func (v *Vector) Reverse() {
 		tmp := make([]interface{}, v.len, v.len)
 		copy(tmp, v.data)
 		v.data = tmp
-		v.cap=v.len
+		v.cap = v.len
 	}
 	for i := uint64(0); i < v.len/2; i++ {
 		v.data[i], v.data[v.len-i-1] = v.data[v.len-i-1], v.data[i]
@@ -391,7 +407,7 @@ func (v *Vector) Reverse() {
 //@return    	e			interface{}				从容器中查找的第idx位元素
 func (v *Vector) At(idx uint64) (e interface{}) {
 	if v == nil {
-		v=New()
+		v = New()
 		return nil
 	}
 	v.mutex.Lock()
@@ -418,7 +434,7 @@ func (v *Vector) At(idx uint64) (e interface{}) {
 //@return    	e			interface{}				容器的第一个元素
 func (v *Vector) Front() (e interface{}) {
 	if v == nil {
-		v=New()
+		v = New()
 		return nil
 	}
 	v.mutex.Lock()
@@ -441,7 +457,7 @@ func (v *Vector) Front() (e interface{}) {
 //@return    	e			interface{}				容器的最后一个元素
 func (v *Vector) Back() (e interface{}) {
 	if v == nil {
-		v=New()
+		v = New()
 		return nil
 	}
 	v.mutex.Lock()

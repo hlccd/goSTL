@@ -43,7 +43,7 @@ type lister interface {
 	Get(idx uint64) (e interface{})                                //获得下标为idx的元素
 	Set(idx uint64, e interface{})                                 //在下标为idx的位置上放置元素e
 	IndexOf(e interface{}, Equ ...comparator.Equaler) (idx uint64) //返回和元素e相同的第一个下标
-	SubList(begin, num uint64) (newList *list)                     //从begin开始复制最多num个元素以形成新的链表
+	SubList(begin, num uint64) (newList *List)                     //从begin开始复制最多num个元素以形成新的链表
 }
 
 //@title    New

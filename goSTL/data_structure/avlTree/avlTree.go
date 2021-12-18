@@ -21,7 +21,7 @@ import (
 //同时保存该二叉树已经存储了多少个元素
 //二叉树中排序使用的比较器在创建时传入,若不传入则在插入首个节点时从默认比较器中寻找
 //创建时传入是否允许该二叉树出现重复值,如果不允许则进行覆盖,允许则对节点数目增加即可
-type avlTree struct {
+type AvlTree struct {
 	root    *node                 //根节点指针
 	size    int                   //存储元素数量
 	cmp     comparator.Comparator //比较器
@@ -37,8 +37,8 @@ type avlTreer interface {
 	Size() (num int)                  //返回该二叉树中保存的元素个数
 	Clear()                           //清空该二叉树
 	Empty() (b bool)                  //判断该二叉树是否为空
-	Insert(e interface{})             //向二叉树中插入元素e
-	Erase(e interface{})              //从二叉树中删除元素e
+	Insert(e interface{}) (b bool)            //向二叉树中插入元素e
+	Erase(e interface{}) (b bool)     //从二叉树中删除元素e
 	Count(e interface{}) (num int)    //从二叉树中寻找元素e并返回其个数
 }
 
@@ -52,7 +52,7 @@ type avlTreer interface {
 //@param    	isMulti		bool						该二叉树是否保存重复值?
 //@param    	Cmp			 ...comparator.Comparator	avlTree比较器集
 //@return    	avl        	*avlTree						新建的avlTree指针
-func New(isMulti bool, cmps ...comparator.Comparator) (avl *avlTree) {
+func New(isMulti bool, cmps ...comparator.Comparator) (avl *AvlTree) {
 	//判断是否有传入比较器,若有则设为该二叉树默认比较器
 	var cmp comparator.Comparator
 	if len(cmps) == 0 {
@@ -60,7 +60,7 @@ func New(isMulti bool, cmps ...comparator.Comparator) (avl *avlTree) {
 	} else {
 		cmp = cmps[0]
 	}
-	return &avlTree{
+	return &AvlTree{
 		root:    nil,
 		size:    0,
 		cmp:     cmp,
@@ -76,12 +76,12 @@ func New(isMulti bool, cmps ...comparator.Comparator) (avl *avlTree) {
 //@receiver		avl			*avlTree				接受者avlTree的指针
 //@param    	nil
 //@return    	i        	*iterator.Iterator		新建的Iterator迭代器指针
-func (avl *avlTree) Iterator() (i *Iterator.Iterator) {
+func (avl *AvlTree) Iterator() (i *Iterator.Iterator) {
 	if avl == nil {
 		return nil
 	}
 	avl.mutex.Lock()
-	es:=avl.root.inOrder()
+	es := avl.root.inOrder()
 	i = Iterator.New(&es)
 	avl.mutex.Unlock()
 	return i
@@ -95,7 +95,7 @@ func (avl *avlTree) Iterator() (i *Iterator.Iterator) {
 //@receiver		avl			*avlTree				接受者avlTree的指针
 //@param    	nil
 //@return    	num        	int						容器中实际使用元素所占空间大小
-func (avl *avlTree) Size() (num int) {
+func (avl *AvlTree) Size() (num int) {
 	if avl == nil {
 		return 0
 	}
@@ -110,7 +110,7 @@ func (avl *avlTree) Size() (num int) {
 //@receiver		avl			*avlTree				接受者avlTree的指针
 //@param    	nil
 //@return    	nil
-func (avl *avlTree) Clear() {
+func (avl *AvlTree) Clear() {
 	if avl == nil {
 		return
 	}
@@ -130,7 +130,7 @@ func (avl *avlTree) Clear() {
 //@receiver		avl			*avlTree				接受者avlTree的指针
 //@param    	nil
 //@return    	b			bool					该容器是空的吗?
-func (avl *avlTree) Empty() (b bool) {
+func (avl *AvlTree) Empty() (b bool) {
 	if avl == nil {
 		return true
 	}
@@ -148,10 +148,10 @@ func (avl *avlTree) Empty() (b bool) {
 //		当节点左右子树高度差超过1时将进行旋转以保持平衡
 //@receiver		avl			*avlTree				接受者avlTree的指针
 //@param    	e			interface{}				待插入元素
-//@return    	nil
-func (avl *avlTree) Insert(e interface{}) {
+//@return    	b			bool					添加成功?
+func (avl *AvlTree) Insert(e interface{}) (b bool){
 	if avl == nil {
-		return
+		return false
 	}
 	avl.mutex.Lock()
 	if avl.Empty() {
@@ -165,16 +165,16 @@ func (avl *avlTree) Insert(e interface{}) {
 		avl.root = newNode(e)
 		avl.size = 1
 		avl.mutex.Unlock()
-		return
+		return true
 	}
 	//从根节点进行插入,并返回节点,同时返回是否插入成功
-	var b bool
 	avl.root, b = avl.root.insert(e, avl.isMulti, avl.cmp)
 	if b {
 		//插入成功,数量+1
 		avl.size++
 	}
 	avl.mutex.Unlock()
+	return b
 }
 
 //@title    Erase
@@ -186,13 +186,13 @@ func (avl *avlTree) Insert(e interface{}) {
 //		如果该二叉树仅持有一个元素且根节点等价于待删除元素,则将二叉树根节点置为nil
 //@receiver		avl			*avlTree				接受者avlTree的指针
 //@param    	e			interface{}				待删除元素
-//@return    	nil
-func (avl *avlTree) Erase(e interface{}) {
+//@return    	b			bool					删除成功
+func (avl *AvlTree) Erase(e interface{}) (b bool) {
 	if avl == nil {
-		return
+		return false
 	}
 	if avl.Empty() {
-		return
+		return false
 	}
 	avl.mutex.Lock()
 	if avl.size == 1 && avl.cmp(avl.root.value, e) == 0 {
@@ -200,15 +200,15 @@ func (avl *avlTree) Erase(e interface{}) {
 		avl.root = nil
 		avl.size = 0
 		avl.mutex.Unlock()
-		return
+		return true
 	}
 	//从根节点进行插入,并返回节点,同时返回是否删除成功
-	var b bool
 	avl.root, b = avl.root.erase(e, avl.cmp)
 	if b {
 		avl.size--
 	}
 	avl.mutex.Unlock()
+	return b
 }
 
 //@title    Count
@@ -221,7 +221,7 @@ func (avl *avlTree) Erase(e interface{}) {
 //@receiver		avl			*avlTree				接受者avlTree的指针
 //@param    	e			interface{}				待查找元素
 //@return    	num			int						待查找元素在二叉树中存储的个数
-func (avl *avlTree) Count(e interface{}) (num int) {
+func (avl *AvlTree) Count(e interface{}) (num int) {
 	if avl == nil {
 		//二叉树为空,返回0
 		return 0
@@ -244,7 +244,7 @@ func (avl *avlTree) Count(e interface{}) (num int) {
 //@receiver		avl			*avlTree				接受者avlTree的指针
 //@param    	e			interface{}				待查找索引元素
 //@return    	ans			interface{}				待查找索引元素所指向的元素
-func (avl *avlTree) Find(e interface{}) (ans interface{}) {
+func (avl *AvlTree) Find(e interface{}) (ans interface{}) {
 	if avl == nil {
 		//二叉树为空,返回0
 		return 0

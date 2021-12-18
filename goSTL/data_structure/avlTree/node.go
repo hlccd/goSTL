@@ -361,11 +361,11 @@ func (n *node) find(e interface{}, isMulti bool, cmp comparator.Comparator) (ans
 	}
 	//n中承载元素小于e,从右子树继续查找并返回结果
 	if cmp(n.value, e) < 0 {
-		return n.right.count(e, isMulti, cmp)
+		return n.right.find(e, isMulti, cmp)
 	}
 	//n中承载元素大于e,从左子树继续查找并返回结果
 	if cmp(n.value, e) > 0 {
-		return n.left.count(e, isMulti, cmp)
+		return n.left.find(e, isMulti, cmp)
 	}
 	//n中承载元素等于e,直接返回结果
 	return n.value
