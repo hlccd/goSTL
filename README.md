@@ -43,3 +43,6 @@
 
 #### 哈希映射:hashMap
 参考：https://zhuanlan.zhihu.com/p/447063415
+
+#### 单词查找树:trie
+参考：https://zhuanlan.zhihu.com/p/447352512
