@@ -117,6 +117,9 @@ func (t *trie) Clear() {
 //@param    	nil
 //@return    	b			bool					该容器是空的吗?
 func (t *trie) Empty() (b bool) {
+	if t == nil {
+		return true
+	}
 	return t.size == 0
 }
 
@@ -234,7 +237,7 @@ func (t *trie) Delete(s string) (num int) {
 //		如果未找到则返回0
 //@receiver		t			*trie					接受者trie的指针
 //@param    	s			string					待查找的前缀s
-//@return    	num			int						待查找前缀在trie中存在的数量
+//@return    	num			int						待查找前缀在trie树中存在的数量
 func (t *trie) Count(s string) (num int) {
 	if t == nil {
 		return 0
