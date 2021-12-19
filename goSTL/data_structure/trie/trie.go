@@ -34,6 +34,7 @@ type trieer interface {
 	Empty() (b bool)                         //判断该trie是否为空
 	Insert(s string, e interface{}) (b bool) //向trie中插入string并携带元素e
 	Erase(s string) (b bool)                 //从trie中删除以s为索引的元素e
+	Delete(s string) (num int)               //从trie中删除以s为前缀的所有元素
 	Count(s string) (num int)                //从trie中寻找以s为前缀的string单词数
 	Find(s string) (e interface{})           //从trie中寻找以s为索引的元素e
 }
@@ -116,10 +117,7 @@ func (t *trie) Clear() {
 //@param    	nil
 //@return    	b			bool					该容器是空的吗?
 func (t *trie) Empty() (b bool) {
-	if t.Size() > 0 {
-		return false
-	}
-	return true
+	return t.size == 0
 }
 
 //@title    Insert
@@ -189,6 +187,43 @@ func (t *trie) Erase(s string) (b bool) {
 	}
 	t.mutex.Unlock()
 	return b
+}
+
+//@title    Delete
+//@description
+//		以trie单词查找树做接收者
+//		从trie树中删除以s为前缀的所有元素
+//@receiver		t			*trie					接受者trie的指针
+//@param    	s			string					待删除元素的前缀
+//@return    	num			int						被删除的元素的数量
+func (t *trie) Delete(s string) (num int) {
+	if t == nil {
+		return 0
+	}
+	if t.Empty() {
+		return 0
+	}
+	if len(s) == 0 {
+		//长度为0无法删除
+		return 0
+	}
+	if t.root == nil {
+		//根节点为nil即无法删除
+		return 0
+	}
+	t.mutex.Lock()
+	//从根节点开始删除
+	num = t.root.delete(s, 0)
+	if num > 0 {
+		//删除成功
+		t.size -= num
+		if t.size <= 0 {
+			//所有string都被删除,根节点置为nil
+			t.root = nil
+		}
+	}
+	t.mutex.Unlock()
+	return num
 }
 
 //@title    Count

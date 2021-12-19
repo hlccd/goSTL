@@ -13,9 +13,9 @@ package trie
 //以son为分叉存储下属的string
 //该节点同时存储其元素
 type node struct {
-	num   int
-	son   [64]*node
-	value interface{}
+	num   int         //以当前结点为前缀的string的数量
+	son   [64]*node   //分叉
+	value interface{} //当前结点承载的元素
 }
 
 //@title    newNode
@@ -155,6 +155,36 @@ func (n *node) erase(s string, p int) (b bool) {
 	return b
 }
 
+//@title    delete
+//@description
+//		以node单词查找树节点做接收者
+//		从n节点中继续删除以s为索引的元素e,且当前抵达的string位置为p
+//		当到达s终点时进行删除,删除所有后续元素,并返回其后续元素的数量
+//		当未到达终点时,根据当前抵达的位置去寻找其子结点继续遍历即可,若其分叉为nil则直接返回0
+//@receiver		n			*node					接受者node的指针
+//@param    	s			string					待删除元素的索引s
+//@param    	p			int						索引当前抵达的位置
+//@return    	num        	int						被删除元素的数量
+func (n *node) delete(s string, p int) (num int) {
+	if p == len(s) {
+		return n.num
+	}
+	idx := getIdx(s[p])
+	if idx == -1 {
+		return 0
+	}
+	if n.son[idx] == nil {
+		return 0
+	}
+	num = n.son[idx].delete(s, p+1)
+	if num>0 {
+		n.num-=num
+		if n.son[idx].num <= 0 {
+			n.son[idx] = nil
+		}
+	}
+	return num
+}
 //@title    count
 //@description
 //		以node单词查找树节点做接收者
