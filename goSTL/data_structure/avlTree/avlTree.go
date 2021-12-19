@@ -37,7 +37,7 @@ type avlTreer interface {
 	Size() (num int)                  //返回该二叉树中保存的元素个数
 	Clear()                           //清空该二叉树
 	Empty() (b bool)                  //判断该二叉树是否为空
-	Insert(e interface{}) (b bool)            //向二叉树中插入元素e
+	Insert(e interface{}) (b bool)    //向二叉树中插入元素e
 	Erase(e interface{}) (b bool)     //从二叉树中删除元素e
 	Count(e interface{}) (num int)    //从二叉树中寻找元素e并返回其个数
 }
@@ -149,7 +149,7 @@ func (avl *AvlTree) Empty() (b bool) {
 //@receiver		avl			*avlTree				接受者avlTree的指针
 //@param    	e			interface{}				待插入元素
 //@return    	b			bool					添加成功?
-func (avl *AvlTree) Insert(e interface{}) (b bool){
+func (avl *AvlTree) Insert(e interface{}) (b bool) {
 	if avl == nil {
 		return false
 	}
@@ -186,7 +186,7 @@ func (avl *AvlTree) Insert(e interface{}) (b bool){
 //		如果该二叉树仅持有一个元素且根节点等价于待删除元素,则将二叉树根节点置为nil
 //@receiver		avl			*avlTree				接受者avlTree的指针
 //@param    	e			interface{}				待删除元素
-//@return    	b			bool					删除成功
+//@return    	b			bool					删除成功?
 func (avl *AvlTree) Erase(e interface{}) (b bool) {
 	if avl == nil {
 		return false

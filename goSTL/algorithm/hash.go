@@ -1,5 +1,13 @@
 package algorithm
 
+//@Title		algorithm
+//@Description
+//		hash函数
+//		定义了一个hash函数类型,该类型可传入一个key并返回其hash值
+//		该包内定义了一些自带类型的hash函数
+//		当使用自定义的数据结构时若不传入hash函数则使用默认的hash函数
+//		若传入类型非系统自带类型,则返回nil同时对数据的插入失败
+
 type Hasher func(key interface{}) uint64
 
 func GetHash(e interface{}) (hash Hasher) {
@@ -47,37 +55,37 @@ func boolHash(key interface{}) uint64 {
 	return 0
 }
 func intHash(key interface{}) uint64 {
-	return uint64(key.(int) * key.(int)/2)
+	return uint64(key.(int) * key.(int) / 2)
 }
 func int8Hash(key interface{}) uint64 {
-	return uint64(key.(int8) * key.(int8)/2)
+	return uint64(key.(int8) * key.(int8) / 2)
 }
 func uint8Hash(key interface{}) uint64 {
-	return uint64(key.(uint8) * key.(uint8)/2)
+	return uint64(key.(uint8) * key.(uint8) / 2)
 }
 func int16Hash(key interface{}) uint64 {
-	return uint64(key.(int16) * key.(int16)/2)
+	return uint64(key.(int16) * key.(int16) / 2)
 }
 func uint16Hash(key interface{}) uint64 {
-	return uint64(key.(uint16) * key.(uint16)/2)
+	return uint64(key.(uint16) * key.(uint16) / 2)
 }
 func int32Hash(key interface{}) uint64 {
-	return uint64(key.(int32) * key.(int32)/2)
+	return uint64(key.(int32) * key.(int32) / 2)
 }
 func uint32Hash(key interface{}) uint64 {
-	return uint64(key.(uint32) * key.(uint32)/2)
+	return uint64(key.(uint32) * key.(uint32) / 2)
 }
 func int64Hash(key interface{}) uint64 {
-	return uint64(key.(int64) * key.(int64)/2)
+	return uint64(key.(int64) * key.(int64) / 2)
 }
 func uint64Hash(key interface{}) uint64 {
-	return uint64(key.(uint64) * key.(uint64)/2)
+	return uint64(key.(uint64) * key.(uint64) / 2)
 }
 func float32Hash(key interface{}) uint64 {
-	return uint64(key.(float32) * key.(float32)/2)
+	return uint64(key.(float32) * key.(float32) / 2)
 }
 func float64Hash(key interface{}) uint64 {
-	return uint64(key.(float64) * key.(float64)/2)
+	return uint64(key.(float64) * key.(float64) / 2)
 }
 func complex64Hash(key interface{}) uint64 {
 	r := uint64(real(key.(complex64)))
