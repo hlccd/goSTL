@@ -46,3 +46,6 @@
 
 #### 单词查找树:trie
 参考：https://zhuanlan.zhihu.com/p/447352512
+
+#### 最近最少使用链:lru
+参考：https://zhuanlan.zhihu.com/p/449813097
