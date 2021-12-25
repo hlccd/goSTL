@@ -24,7 +24,6 @@ import (
 //当添加节点时尾指针大于已分配空间长度,则按照扩容策略进行扩容
 //并发控制锁用以保证在高并发过程中不会出现错误
 //使用比较器重载了Sort
-
 type Vector struct {
 	data  []interface{} //动态数组
 	len   uint64        //当前已用数量
@@ -32,11 +31,12 @@ type Vector struct {
 	mutex sync.Mutex    //并发控制锁
 }
 
+//vector扩容边界,边界内进行翻倍扩容,边界外进行固定扩容
 const bound = 4294967296
+
 //vector向量容器接口
 //存放了vector容器可使用的函数
 //对应函数介绍见下方
-
 type vectorer interface {
 	Iterator() (i *Iterator.Iterator)  //返回一个包含vector所有元素的迭代器
 	Sort(Cmp ...comparator.Comparator) //利用比较器对其进行排序
