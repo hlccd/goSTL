@@ -57,8 +57,8 @@ type hashMaper interface {
 //		初始vector长度为16
 //		若有传入的hash函数,则将传入的第一个hash函数设为该hash映射的hash函数
 //@receiver		nil
-//@param    	Cmp			 ...algorithm.Hasher		hashMap的hash函数集
-//@return    	hm        	*hashMap					新建的hashMap指针
+//@param    	Cmp			...algorithm.Hasher		hashMap的hash函数集
+//@return    	hm			*hashMap				新建的hashMap指针
 func New(hash ...algorithm.Hasher) (hm *hashMap) {
 	var h algorithm.Hasher
 	if len(hash) == 0 {
@@ -125,7 +125,7 @@ func (hm *hashMap) Iterator() (i *Iterator.Iterator) {
 //		如果容器为nil返回0
 //@receiver		hm			*hashMap				接受者hashMap的指针
 //@param    	nil
-//@return    	num        	int						容器中实际使用元素所占空间大小
+//@return    	num        	uint64					当前存储的元素数量
 func (hm *hashMap) Size() (num uint64) {
 	if hm == nil {
 		return 0
