@@ -270,8 +270,6 @@ func (r *radix) Mate(s string) (m map[string]string, ok bool) {
 		return nil, false
 	}
 	//将s按'/'进行分割,并去掉第一个即去掉"",随后一次按照分层结果进行查找
-	r.mutex.Lock()
 	m, ok = r.root.mate(s, 0)
-	r.mutex.Unlock()
 	return m, ok
 }
