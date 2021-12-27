@@ -1,4 +1,6 @@
-# goSTL
+#所有介绍可参考blog文件夹下的文件,也可参考下方列出的网址
+
+## goSTL
 #### 比较器:comparator
 参考：https://zhuanlan.zhihu.com/p/422888284
 
@@ -53,3 +55,5 @@
 #### 前缀基数树:radix
 参考：https://zhuanlan.zhihu.com/p/450050034
 
+#### 一致性哈希:consistentHash
+参考：https://zhuanlan.zhihu.com/p/450283390
