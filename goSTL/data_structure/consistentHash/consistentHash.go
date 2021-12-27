@@ -61,7 +61,7 @@ type consistentHasher interface {
 //@receiver		nil
 //@param    	id			int				虚拟节点的id
 //@param    	v			interface{}		实际结点的key
-//@return    	hm			*hashMap		计算得到的hash值
+//@return    	h			uint32			计算得到的hash值
 func hash(id int, v interface{}) (h uint32) {
 	prime := primes[(id*id+len(primes))%len(primes)]
 	h = uint32(0)

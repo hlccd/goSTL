@@ -11,7 +11,6 @@ package bitmap
 //bitmap位图结构体
 //包含其用于存储的uint64元素切片
 //选用uint64是为了更多的利用bit位
-
 type Bitmap struct {
 	bits []uint64
 }
@@ -19,7 +18,6 @@ type Bitmap struct {
 //bitmap位图容器接口
 //存放了bitmap容器可使用的函数
 //对应函数介绍见下方
-
 type bitmaper interface {
 	Insert(num uint)         //在num位插入元素
 	Delete(num uint)         //删除第num位
@@ -105,14 +103,14 @@ func (bm *Bitmap) Delete(num uint) {
 		//从后往前遍历判断可缩容内容是否小于总组数
 		i := len(bm.bits) - 1
 		for ; i >= 0; i-- {
-			if bm.bits[i] == 0  && i!=len(bm.bits)-256{
+			if bm.bits[i] == 0 && i != len(bm.bits)-256 {
 				continue
 			} else {
 				//不为0或到1024个时即可返回
 				break
 			}
 		}
-		if i <= len(bm.bits)/2 || i==len(bm.bits)-256 {
+		if i <= len(bm.bits)/2 || i == len(bm.bits)-256 {
 			//小于总组数一半或超过1023个,进行缩容
 			bm.bits = bm.bits[:i+1]
 		}
@@ -129,7 +127,7 @@ func (bm *Bitmap) Delete(num uint) {
 //		否则判断第num为是否为1,为1返回true,否则返回false
 //@receiver		bm			*Bitmap					接受者bitmap的指针
 //@param    	num			int						待检测位的下标
-//@return    	b			bool					第num位存在于位图中
+//@return    	b			bool					第num位存在于位图中吗?
 func (bm *Bitmap) Check(num uint) (b bool) {
 	//bm不存在时直接返回false并结束
 	if bm == nil {
@@ -156,7 +154,7 @@ func (bm *Bitmap) Check(num uint) (b bool) {
 //@return    	nums		[]uint					所有在位图中存在的元素的下标集合
 func (bm *Bitmap) All() (nums []uint) {
 	//对要返回的集合进行初始化,以避免返回nil
-	nums=make([]uint,0,0)
+	nums = make([]uint, 0, 0)
 	//bm不存在时直接返回并结束
 	if bm == nil {
 		return nums
@@ -179,7 +177,7 @@ func (bm *Bitmap) All() (nums []uint) {
 //		清空位图
 //@receiver		bm			*Bitmap					接受者bitmap的指针
 //@param    	nil
-//@return    	nums		[]uint					所有在位图中存在的元素的下标集合
+//@return    	nil
 func (bm *Bitmap) Clear() {
 	if bm == nil {
 		return
