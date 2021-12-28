@@ -15,6 +15,7 @@ import "fmt"
 //选用uint64是为了更多的利用bit位
 type bloomFilter struct {
 	bits []uint64
+	hash Hash
 }
 
 //bloomFilter布隆过滤器接口
@@ -26,6 +27,9 @@ type bloomFilteror interface {
 	Clear()                       //清空该布隆过滤器
 }
 
+//允许自行传入hash函数
+type Hash func(v interface{}) (h uint32)
+
 //@title    hash
 //@description
 //		传入一个虚拟节点id和实际结点
@@ -33,13 +37,13 @@ type bloomFilteror interface {
 //		逐层访问并利用素数131计算其hash值随后返回
 //@receiver		nil
 //@param    	v			interface{}		待计算的值
-//@return    	h			uint64			计算得到的hash值
-func hash(v interface{}) (h uint64) {
-	h = uint64(0)
-	s := fmt.Sprintf("v", v)
+//@return    	h			uint32			计算得到的hash值
+func hash(v interface{}) (h uint32) {
+	h = uint32(0)
+	s := fmt.Sprintf("131-%v-%v", v,v)
 	bs := []byte(s)
 	for i := range bs {
-		h += uint64(bs[i]) * 131
+		h += uint32(bs[i]) * 131
 	}
 	return h
 }
@@ -49,11 +53,15 @@ func hash(v interface{}) (h uint64) {
 //		新建一个bloomFilter布隆过滤器容器并返回
 //		初始bloomFilter的切片数组为空
 //@receiver		nil
-//@param    	nil
+//@param    	h			Hash					hash函数
 //@return    	bf        	*bloomFilter			新建的bloomFilter指针
-func New() (bf *bloomFilter) {
+func New(h Hash) (bf *bloomFilter) {
+	if h == nil {
+		h = hash
+	}
 	return &bloomFilter{
 		bits: make([]uint64, 0, 0),
+		hash: h,
 	}
 }
 
@@ -74,12 +82,12 @@ func (bf *bloomFilter) Insert(v interface{}) {
 		return
 	}
 	//开始插入
-	h := hash(v)
-	if h/64+1 > uint64(len(bf.bits)) {
+	h := bf.hash(v)
+	if h/64+1 > uint32(len(bf.bits)) {
 		//当前冗余量小于num位,需要扩增
 		var tmp []uint64
 		//通过冗余扩增减少扩增次数
-		if h/64+1 < uint64(len(bf.bits)+1024) {
+		if h/64+1 < uint32(len(bf.bits)+1024) {
 			//入的位比冗余的多不足2^16即1024*64时,则新增1024个uint64
 			tmp = make([]uint64, len(bf.bits)+1024)
 		} else {
@@ -110,13 +118,13 @@ func (bf *bloomFilter) Check(v interface{}) (b bool) {
 	if bf == nil {
 		return false
 	}
-	h := hash(v)
+	h := bf.hash(v)
 	//h超出范围,直接返回false并结束
-	if h/64+1 > uint64(len(bf.bits)) {
+	if h/64+1 > uint32(len(bf.bits)) {
 		return false
 	}
 	//判断第num是否为1,为1返回true,否则为false
-	if bf.bits[h/64]&(1<<h%64) > 0 {
+	if bf.bits[h/64]&(1<<(h%64)) > 0 {
 		return true
 	}
 	return false
