@@ -179,7 +179,7 @@ func (bm *bitmap) Check(num uint) (b bool) {
       return false
    }
    //判断第num是否为1,为1返回true,否则为false
-   if bm.bits[num/64]&(1<<num%64) > 0 {
+    if bm.bits[num/64]&(1<<(num%64)) > 0 {
       return true
    }
    return false
