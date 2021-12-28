@@ -60,3 +60,7 @@
 
 #### 布隆过滤器:bloomFilter
 参考：https://zhuanlan.zhihu.com/p/450995290
+
+
+#### 独立请求:singleFlight
+参考：https://zhuanlan.zhihu.com/p/451018160
