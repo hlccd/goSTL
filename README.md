@@ -57,3 +57,6 @@
 
 #### 一致性哈希:consistentHash
 参考：https://zhuanlan.zhihu.com/p/450283390
+
+#### 布隆过滤器:bloomFilter
+参考：https://zhuanlan.zhihu.com/p/450995290
